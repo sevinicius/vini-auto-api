@@ -1,0 +1,35 @@
+﻿services:
+  postgres:
+    image: postgres:15
+    container_name: vini_autos_postgres
+    environment:
+      POSTGRES_DB: vini_autos
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - vini_autos_network
+    restart: unless-stopped
+
+  app:
+    build: .
+    container_name: vini_autos_app
+    ports:
+      - "8081:8081"
+    depends_on:
+      - postgres
+    networks:
+      - vini_autos_network
+    restart: unless-stopped
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
+volumes:
+  postgres_data:
+
+networks:
+  vini_autos_network:
+    driver: bridge
